@@ -38,8 +38,7 @@ def conv2(im, mask):
 
 # 标准化为uint8类型
 def normal_pic(im):
-    tim = np.copy(im)
-    tim[tim < 0] = 0
+    tim = np.clip(im, 0, 255)
     return tim.astype(np.uint8)
 
 def dec_pic(a, b):
