@@ -5,7 +5,7 @@ import matplotlib.image as mpimg
 import numpy as np
 from base import *
 
-im = mpimg.imread("Fig3.08(a).jpg")
+im = mpimg.imread("pic/Fig3.08(a).jpg")
 #im = get_gray(im)
 
 L = 256 # 灰度级
