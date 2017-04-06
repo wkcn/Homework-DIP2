@@ -28,6 +28,8 @@ def conv2(im, mask):
     for r in range(mrow):
         for c in range(mcol):
             z = mask[r, c]
+            if z == 0:
+                continue
             if z not in ms:
                 ms[z] = dim * z 
             m = ms[z]
