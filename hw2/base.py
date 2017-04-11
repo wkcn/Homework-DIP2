@@ -152,6 +152,43 @@ def IDFT2(im):
 
     return left * im.astype(np.complex) * right
 
+# 返回复数
+def to_center_pic(im):
+    cim = im.astype(np.complex)
+    row, col = cim.shape 
+    mesh = np.meshgrid(np.arange(col), np.arange(row))
+    xplusy = mesh[0] + mesh[1]
+    k = np.power(-1, xplusy)
+    ci = np.multiply(cim, k)
+    return ci
+
+def get_gaussian_lowpass_filter(rows, cols, D0):
+    center_r = rows / 2.0
+    center_c = cols / 2.0
+    mesh = np.meshgrid(np.arange(cols), np.arange(rows))
+    dc = mesh[0].astype(np.double) - center_c
+    dr = mesh[1].astype(np.double) - center_r
+    dis2 = (np.multiply(dc,dc) + np.multiply(dr,dr))
+    return np.exp(-dis2 / (2 * D0 * D0))
+
+def get_gaussian_highpass_filter(rows, cols, D0):
+    return 1 - get_gaussian_lowpass_filter(rows, cols, D0)
+
+# 在频域滤波(中心化)
+def filter_in_freq_domain(im, _filter):
+# 中心化
+    cim = to_center_pic(im) 
+# DFT
+    dim = DFT2(cim)
+# 滤波
+    gim = np.multiply(dim, _filter.astype(np.complex))
+# 反DFT并取实部
+    rim = IDFT2(gim).astype(np.int) 
+# 乘以(-1)^(x+y) shift
+    result = normal_pic(to_center_pic(rim))
+    return result
+
+
 if __name__ == "__main__":
     '''
     b = np.array([[1,4,7], [2,5,8], [3,6,9]])
