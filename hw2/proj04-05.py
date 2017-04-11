@@ -16,14 +16,23 @@ zb = np.zeros((mcols, mcols)).astype(np.uint8)
 za[:arows, :acols] = aim
 zb[:brows, :bcols] = bim
 
-def show_max(res):
+def show_max(res, im):
+    row, col = im.shape
+    z = np.zeros((row,col,3)).astype(np.uint8)
+    z[:,:,0] = im
+    z[:,:,1] = im
+    z[:,:,2] = im
     ma = np.max(res)
     rows, cols = np.where(res == ma)
     print ("The maximum value in the 2D corr function is %lf" % ma)
     print ("Index: (x,y)")
     for i in range(len(rows)):
+        r = rows[i]
+        c = cols[i]
         print ("(%d, %d)" % (cols[i], rows[i]))
+        z[r,c,0] = 255
     print ("")
+    return z
 
 # center
 print ("center")
@@ -32,8 +41,9 @@ czb = to_center_pic(zb)
 afft2 = np.fft.fft2(cza) / (mrows * mcols)
 bfft2 = np.fft.fft2(czb) / (mrows * mcols)
 mab = np.multiply(afft2, np.conjugate(bfft2))
+#mab = np.multiply(np.conjugate(afft2), (bfft2))
 res = (to_center_pic(np.fft.ifft2(mab) * mrows * mcols)).astype(np.int)
-show_max(res)
+z = show_max(res, za)
 
 plt.subplot(321)
 plt.imshow(aim, "gray")
@@ -45,6 +55,8 @@ plt.subplot(324)
 plt.imshow(zb, "gray")
 plt.subplot(325)
 plt.imshow(res, "gray")
+plt.subplot(326)
+plt.imshow(z)
 
 plt.show()
 
@@ -55,8 +67,9 @@ czb = (zb)
 afft2 = np.fft.fft2(cza) / (mrows * mcols)
 bfft2 = np.fft.fft2(czb) / (mrows * mcols)
 mab = np.multiply(afft2, np.conjugate(bfft2))
+#mab = np.multiply(np.conjugate(afft2), (bfft2))
 res2 = ((np.fft.ifft2(mab) * mrows * mcols)).astype(np.int)
-show_max(res2)
+z = show_max(res2, za)
 
 plt.subplot(321)
 plt.imshow(aim, "gray")
@@ -68,6 +81,8 @@ plt.subplot(324)
 plt.imshow(zb, "gray")
 plt.subplot(325)
 plt.imshow(res2, "gray")
+plt.subplot(326)
+plt.imshow(z)
 
 plt.show()
 
