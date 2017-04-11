@@ -31,6 +31,7 @@ def show_max(res, im):
         c = cols[i]
         print ("(%d, %d)" % (cols[i], rows[i]))
         z[r,c,0] = 255
+        z[r:r+brows,c:c+bcols,0] = 255
     print ("")
     return z
 
@@ -38,11 +39,12 @@ def show_max(res, im):
 print ("center")
 cza = to_center_pic(za)
 czb = to_center_pic(zb)
-afft2 = np.fft.fft2(cza) / (mrows * mcols)
-bfft2 = np.fft.fft2(czb) / (mrows * mcols)
+afft2 = DFT2(cza)#np.fft.fft2(cza) / (mrows * mcols)
+bfft2 = DFT2(czb)#np.fft.fft2(czb) / (mrows * mcols)
 mab = np.multiply(afft2, np.conjugate(bfft2))
 #mab = np.multiply(np.conjugate(afft2), (bfft2))
-res = (to_center_pic(np.fft.ifft2(mab) * mrows * mcols)).astype(np.int)
+#res = (to_center_pic(np.fft.ifft2(mab) * mrows * mcols)).astype(np.int)
+res = (to_center_pic(IDFT2(mab))).astype(np.int)
 z = show_max(res, za)
 
 plt.subplot(321)
