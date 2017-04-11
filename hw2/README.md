@@ -1,4 +1,14 @@
 # 数字图像处理 实验二
+姓名: 吴侃
+学号: 14348134
+邮箱: wkcn@live.cn
+***
+摘要:
+本次实验中, 我实现了纯矩阵乘法的离散傅里叶正变换与反变换, 图像的中心化, 频谱的计算与显示, 平均值的计算, 低通滤波器和高通滤波器的实现, 两张图像相关系数的计算, 以及探究了旋转图像下频谱与图像的关系.
+***
+实验环境:
+编程语言: python 2.7
+第三方库: numpy, scipy, matplotlib
 ***
 ## 04-01 Two-Dimensioal Fast Fourier Transform
 ### 问题内容
@@ -6,7 +16,7 @@
 
 	(b) Multiply the resulting (complex) array by a real function (in the sense that the real coefficients multiply both the real and imaginary parts of the transforms).
 
-	Recall that multiplication of two images is done on pairs of corresponding elements.
+	    Recall that multiplication of two images is done on pairs of corresponding elements.
 
 	(c) Compute the inverse Fourier transform.
 
@@ -18,18 +28,39 @@
 - 中心化
 	经过中心化后, 图像的频谱图的直流分量值将移到中心.
 	$$f(x,y)(-1)^{(x+y)} <-> F(u-M/2,v-N/2)$$
-- 二维傅里叶变换
+- 二维正傅里叶变换
 	将图像从空间域转到频域
 	$$F(u,v)=\frac{1}{MN}\sum_{x=0}^{M-1}\sum_{y=0}^{N-1}f(x,y)e^{-2j\pi(ux/M+vy/N)}$$
 - 二维逆傅里叶变换
 	将图像从频域转到空间域
 	$$f(x,y)=\sum_{u=0}^{M-1}\sum_{v=0}^{N-1}F(u,v)e^{2j\pi(ux/M+vy/N)}$$
+- 空间域的卷积 <-> 频域的乘积
+    $$f(x,y) * g(x,y) <-> F(u,v)G(u,v)$$
 ### 结果分析
 * 对图像进行傅里叶变换, 使图像从空间域转为频域.
 * 假设图像在空间域的大小为MxN, 该图像经过傅里叶变换, 从空间域到频域后, 在频域中的最小大小也为MxN, 周期为MxN.
 * 这里使用三个矩阵相乘的方法实现离散傅里叶变换(DFT)
 * 使用了numpy自带的fft2, octave和matlab的fft2, 和自己实现的DFT函数进行比较. 发现fft2得到的结果没有乘以系数1/MN
 公式推导:
+	$$F(u,v)=\frac{1}{MN}\sum_{x=0}^{M-1}\sum_{y=0}^{N-1}f(x,y)e^{-2j\pi(ux/M+vy/N)}$$
+    $$      =\frac{1}{MN}\sum_{x=0}^{M-1}[{\sum_{y=0}^{N-1}f(x,y)e^{-2j\pi(vy/N)}]e^{-2j\pi(ux/M)}}$$
+矩阵化后的实现代码:
+```
+def DFT2(im):
+    row, col = im.shape
+    # 由于周期性
+    rs = np.matrix(np.arange(row))
+    ur = np.multiply(rs.T, rs)
+    cs = np.matrix(np.arange(col))
+    uc = np.multiply(cs.T, cs)
+
+    left = np.exp(-2j * np.pi * ur / row)
+    right = np.exp(-2j * np.pi * uc / col)
+
+    return left * im.astype(np.complex) * right / (row * col)
+
+```
+逆傅里叶变换的实现方法同理.
 ## 04-02 Fourier Spectrum and Average Value
 ### 问题内容
 	(a) Download Fig. 4.18(a) and compute its (centered) Fourier spectrum.
@@ -59,7 +90,7 @@ The average value is 207.36348 (no center, fft2)
 The average value is 207.36348 (center, dft2)
 The average value is 207.36348 (no center, dft2)
 ```
-![频谱图](report_pic/0201.png)
+![](report_pic/0201.png)
 
 图像的中心点最亮, 由于傅里叶变换前进行了中心化, 频谱图的中心为直流分量的取值.
 
@@ -100,9 +131,18 @@ $$D(u,v)=\sqrt{(u - M/2)^2 + (v - N/2) ^2}$$
 	- 锐化图像
 	原图与其进行低通滤波得到的图像进行相减, 得到锐化图像.
 	
+$$sharped_pic = source_pic - blur_pic$$
+	
 	- 高斯高通滤波器
 	高通滤波器在频域内的函数等于1减去其对应的低通滤波器在频域内的函数
+
 $$H_{HP} = 1 - H_{LP}$$
+$$H(u,v)=e^{-D^2(u,v)}/(2D_0^2)$$
+
+    所以高斯高通滤波器:
+    
+$$GHPF(u,v)=1 - e^{-D^2(u,v)}/(2D_0^2)$$
+
 ### 结果分析
 ![](report_pic/0401.png)
 
@@ -110,9 +150,24 @@ $$H_{HP} = 1 - H_{LP}$$
 	
 	锐化图像A与原图经过高斯高通滤波器后得到的图像B差异不明显.
 
-	然而矩阵A-矩阵B的结果不是零矩阵, 说明两张图像存在差异.
+	然而矩阵A-矩阵B的结果不是零矩阵, 说明两张图像存在差异, 但比较之后得知误差不超过实数1.
+
+	原因为: 实际计算过程中, 傅里叶变换会产生一些误差, 导致最终的结果存在误差.
 
 	通过公式推导: 
+
+        记原图像空间域的函数表示为f, 频域的函数表示F
+
+        高斯低通滤波器为H
+
+        得到锐化图像的频域为F - FH = F(1 - H)
+
+        高斯高通滤波器为G = 1 - H
+
+        经过高通滤波器后的图像为FG = F(1 - H)
+
+		得出锐化图像和经过高通滤波器后的图像是一样的
+    
 
 ![](report_pic/0402.png)
 
@@ -124,10 +179,14 @@ $$H_{HP} = 1 - H_{LP}$$
 ### 问题内容
 	Download Figs. 4.41(a) and (b) and duplicate Example 4.11 to obtain Fig. 4.41(e). 
 
-	Give	 the (x,y) coordinates of the location of the maximum value in the 2D correlation function. There is no need to plot the profile in Fig. 4.41(f).
+	Give the (x,y) coordinates of the location of the maximum value in the 2D correlation function. There is no need to plot the profile in Fig. 4.41(f).
 ### 技术讨论
 	- 图像间相关性公式
+	
+$$f(x,y)\xih(x,y)=\sum_{m=0}^M-1\sum_{n=0}^{N-1}f^{*}(m,n)h(x+m,y+n)$$
+	
 	- 零延拓
+    将求相关性的两张图像扩展为同样大小, 延拓的区域用0来填补.
 ### 结果分析
 ![](report_pic/0501.png)
 
@@ -144,7 +203,8 @@ $$H_{HP} = 1 - H_{LP}$$
 ### 问题内容
 	观察图像旋转时谱平面和旋转图像的关系
 ### 技术讨论
-- 公式推导
+    使用极坐标, 令x = pcos(t), y = psin(t)
+    代入傅里叶变换公式, 可证明图像旋转时频域也以相同的角度和方向进行旋转.
 ### 结果分析
 ![](report_pic/r.png)
 

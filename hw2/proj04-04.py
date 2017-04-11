@@ -26,7 +26,8 @@ sharp_pic = dec_pic(im, get_lowpass_pic(CR))
 ghpf_pic = filter_in_freq_domain(im, get_gaussian_highpass_filter(rows, rows, CR)) 
 
 d = sharp_pic.astype(np.int) - ghpf_pic.astype(np.int)
-print (np.sum(np.abs(d)))
+print ("Error: ", np.max(np.abs(d)))
+
 
 plt.subplot(121)
 plt.title("Sharped Pic")
