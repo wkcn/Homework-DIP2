@@ -15,9 +15,14 @@ k = np.power(-1, xplusy)
 ci = np.multiply(cim, k)
 
 fft2 = np.fft.fft2(ci)
+dft2 = DFT2(ci) 
 
-print ("The average value is " + str(fft2[row / 2, col / 2]) + " (center)")
-print ("The average value is " + str(np.fft.fft2(cim)[0,0]) + " (no center)")
+R = lambda x : str(x.real)
+
+print ("The average value is " + R(fft2[row / 2, col / 2] / (row * col)) + " (center, fft2)")
+print ("The average value is " + R(np.fft.fft2(cim)[0,0] / (row * col)) + " (no center, fft2)")
+print ("The average value is " + R(dft2[row / 2, col / 2]) + " (center, dft2)")
+print ("The average value is " + R(DFT2(cim)[0,0]) + " (no center, dft2)")
 
 
 lgfft2 = np.log(1 + np.abs(fft2))
