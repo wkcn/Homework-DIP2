@@ -17,10 +17,13 @@
 ### 技术讨论
 - 中心化
 	经过中心化后, 图像的频谱图的直流分量值将移到中心.
-- 傅里叶变换
+	$$f(x,y)(-1)^{(x+y)} <-> F(u-M/2,v-N/2)$$
+- 二维傅里叶变换
 	将图像从空间域转到频域
-- 逆傅里叶变换
+	$$F(u,v)=\frac{1}{MN}\sum_{x=0}^{M-1}\sum_{y=0}^{N-1}f(x,y)e^{-2j\pi(ux/M+vy/N)}$$
+- 二维逆傅里叶变换
 	将图像从频域转到空间域
+	$$f(x,y)=\sum_{u=0}^{M-1}\sum_{v=0}^{N-1}F(u,v)e^{2j\pi(ux/M+vy/N)}$$
 ### 结果分析
 * 对图像进行傅里叶变换, 使图像从空间域转为频域.
 * 假设图像在空间域的大小为MxN, 该图像经过傅里叶变换, 从空间域到频域后, 在频域中的最小大小也为MxN, 周期为MxN.
@@ -37,12 +40,14 @@
 ### 技术讨论
 - 显示频谱
 
-	由于图像矩阵经过傅里叶变换后得到的二维矩阵的元素为虚数, 并且存在负数和绝对值比较大的数. 为了得到良好的显示效果, 将傅里叶变换后得到的结果F(u, v), 转换为log2(1 + abs(F(u, v)))
+	由于图像矩阵经过傅里叶变换后得到的二维矩阵的元素为虚数, 并且存在负数和绝对值比较大的数. 为了得到良好的显示效果, 将傅里叶变换后得到的结果F(u, v), 转换为$$\log_2(1 + abs(F(u, v)))$$
 
 - 计算均值
 	- 当进行傅里叶变换前没有将图像中心化时, 当u = 0, v = 0, F(0, 0)等于图像像素取值的平均值.
+		$$F(0,0)=\frac{1}{MN}\sum_{x=0}^{M-1}\sum_{y=0}^{N-1}f(x,y)$$
 	- 当进行傅里叶变换前进行了图像中心化时, 若M, N都为偶数时, u = M / 2, v = N / 2时, F(u, v)等于图像像素取值的平均值.
-		- 公式推导
+	$$f(x,y)(-1)^{(x+y)} <-> F(u-M/2,v-N/2)$$
+	u = M/2, v = N/2 时, F(u-M/2,v-N/2) = F(0,0)
 
 	 [注: 这里的矩阵下标从0开始]
 
@@ -62,10 +67,15 @@ The average value is 207.36348 (no center, dft2)
 
 ## 04-03 Lowpass Filtering
 ### 问题内容
-	(a) Implement the Gaussian lowpass filter in Eq. (4.3-7). You must be able to specify the size, M x N, of the resulting 2D function. In addition, you must be able to specify where the 2D location of the center of the Gaussian function.
+	(a) Implement the Gaussian lowpass filter in Eq. (4.3-7). You must be able to specify the size, M x N, of the resulting 2D function. 
+
+		In addition, you must be able to specify where the 2D location of the center of the Gaussian function.
+
 	(b) Download Fig. 4.11(a) [this image is the same as Fig. 4.18(a)] and lowpass filter it to obtain Fig. 4.18(c).
 ### 技术讨论
 - 高斯低通滤波器
+$$H(u,v)=e^{-D^2(u,v)}/(2D_0^2)$$
+$$D(u,v)=\sqrt{(u - M/2)^2 + (v - N/2) ^2}$$
 ### 结果分析
 ![](report_pic/0301.png)
 
@@ -89,8 +99,10 @@ The average value is 207.36348 (no center, dft2)
 ### 技术讨论
 	- 锐化图像
 	原图与其进行低通滤波得到的图像进行相减, 得到锐化图像.
+	
 	- 高斯高通滤波器
 	高通滤波器在频域内的函数等于1减去其对应的低通滤波器在频域内的函数
+$$H_{HP} = 1 - H_{LP}$$
 ### 结果分析
 ![](report_pic/0401.png)
 
@@ -110,7 +122,9 @@ The average value is 207.36348 (no center, dft2)
 
 ## 04-05 Correlation in the Frequency Domain 
 ### 问题内容
-	Download Figs. 4.41(a) and (b) and duplicate Example 4.11 to obtain Fig. 4.41(e). Give the (x,y) coordinates of the location of the maximum value in the 2D correlation function. There is no need to plot the profile in Fig. 4.41(f).
+	Download Figs. 4.41(a) and (b) and duplicate Example 4.11 to obtain Fig. 4.41(e). 
+
+	Give	 the (x,y) coordinates of the location of the maximum value in the 2D correlation function. There is no need to plot the profile in Fig. 4.41(f).
 ### 技术讨论
 	- 图像间相关性公式
 	- 零延拓
@@ -133,5 +147,9 @@ The average value is 207.36348 (no center, dft2)
 - 公式推导
 ### 结果分析
 ![](report_pic/r.png)
+
+![](report_pic/r2.png)
+
+![](report_pic/r3.png)
 
 - 可以看见图像旋转时, 谱平面也旋转, 而且谱平面旋转的角度与方向与空间域中的图像的旋转的角度与方向一致.
