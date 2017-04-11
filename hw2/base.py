@@ -49,6 +49,9 @@ def dec_pic(a, b):
 def add_pic(a, b):
     return np.clip((a.astype(np.int) + b.astype(np.int)), 0, 255).astype(np.uint8)
 
+def mul_pic(a,b):
+    return normal_pic(np.multiply(a.astype(np.int), b.astype(np.int)))
+
 def get_bilinear_value(im, pos):
     # pos = (r,c)
     # 使用双线性插值
@@ -124,6 +127,31 @@ def resize_pic(im, siz):
     # 缩小
     return shrink_matrix(im, siz)
 
+def DFT2(im):
+    row, col = im.shape
+    # 由于周期性
+    rs = np.matrix(np.arange(row))
+    ur = np.multiply(rs.T, rs)
+    cs = np.matrix(np.arange(col))
+    uc = np.multiply(cs.T, cs)
+
+    left = np.exp(-2j * np.pi * ur / row)
+    right = np.exp(-2j * np.pi * uc / col)
+
+    return left * im.astype(np.complex) * right / (row * col)
+
+def IDFT2(im):
+    row, col = im.shape
+    # 由于周期性
+    rs = np.matrix(np.arange(row))
+    ur = np.multiply(rs.T, rs)
+    cs = np.matrix(np.arange(col))
+    uc = np.multiply(cs.T, cs)
+    left = np.exp(2j * np.pi * ur / row)
+    right = np.exp(2j * np.pi * uc / col)
+
+    return left * im.astype(np.complex) * right
+
 if __name__ == "__main__":
     '''
     b = np.array([[1,4,7], [2,5,8], [3,6,9]])
@@ -137,15 +165,24 @@ if __name__ == "__main__":
     d = shrink_matrix(c, (3,3))
     print (d)
     '''
+    '''
     import matplotlib.pyplot as plt
     import matplotlib.image as mpimg
     im = mpimg.imread("../hw1/pic/Fig3.40(a).jpg")
     s = im.shape
-    plt.imshow(im)
+    plt.imshow(im, "gray")
     plt.show()
-    laim = resize_pic(im, (200,200))
+    laim = resize_pic(im, (100,100))
     plt.imshow(laim, "gray")
     plt.show()
     laim = resize_pic(laim, s)
     plt.imshow(laim, "gray")
     plt.show()
+    '''
+
+    a = np.matrix("1,2,3;3,4,5;3,2,1")
+    b = DFT2(a)
+    c = IDFT2(b)
+    print (a)
+    print (b)
+    print (c)
