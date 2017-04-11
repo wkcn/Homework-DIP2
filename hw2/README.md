@@ -16,8 +16,11 @@
 
 ### 技术讨论
 - 中心化
+	经过中心化后, 图像的频谱图的直流分量值将移到中心.
 - 傅里叶变换
+	将图像从空间域转到频域
 - 逆傅里叶变换
+	将图像从频域转到空间域
 ### 结果分析
 * 对图像进行傅里叶变换, 使图像从空间域转为频域.
 * 假设图像在空间域的大小为MxN, 该图像经过傅里叶变换, 从空间域到频域后, 在频域中的最小大小也为MxN, 周期为MxN.
@@ -52,6 +55,11 @@ The average value is 207.36348 (center, dft2)
 The average value is 207.36348 (no center, dft2)
 ```
 ![频谱图](report_pic/0201.png)
+
+图像的中心点最亮, 由于傅里叶变换前进行了中心化, 频谱图的中心为直流分量的取值.
+
+频谱图的横轴和纵轴比较亮, 在横轴上能够看到很多个亮点, 说明图像的频谱在横轴的频率比较高.  
+
 ## 04-03 Lowpass Filtering
 ### 问题内容
 	(a) Implement the Gaussian lowpass filter in Eq. (4.3-7). You must be able to specify the size, M x N, of the resulting 2D function. In addition, you must be able to specify where the 2D location of the center of the Gaussian function.
@@ -61,9 +69,18 @@ The average value is 207.36348 (no center, dft2)
 ### 结果分析
 ![](report_pic/0301.png)
 
+上图中, 左图为原图, 中间图为经过高斯低通滤波器后得到的图, 右图为高斯低通滤波器.
+
 ![](report_pic/0302.png)
 
+更改高斯低通滤波器的半径(方差, D0), 可以发现高斯低通滤波器的半径越小, 图像越模糊, 图像的细节越不清晰.
+
 ![](report_pic/0303.png)
+
+上图显示了不同半径的高斯低通滤波器的频谱图, 白色区域为滤波器允许通过的频率, 允许通过的频率为低频率.
+
+半径越大, 白色区域的面积越大, 通过的频率的范围就越广, 能允许更高的频率通过. 
+
 ## 04-04 Highpass Filtering Using a Lowpass Image
 ### 问题内容
 	(a) Subtract your image in Project 04-03(b) from the original to obtain a sharpened image, as in Eq. (4.4-14). You will note that the resulting image does not resemble the Gaussian highpass results in Fig. 4.26. Explain why this is so.
@@ -77,11 +94,20 @@ The average value is 207.36348 (no center, dft2)
 ### 结果分析
 ![](report_pic/0401.png)
 
+	观看结果图像, 两张图像的底色都为黑色.
+	
+	锐化图像A与原图经过高斯高通滤波器后得到的图像B差异不明显.
+
+	然而矩阵A-矩阵B的结果不是零矩阵, 说明两张图像存在差异.
+
+	通过公式推导: 
+
 ![](report_pic/0402.png)
 
-	观看结果图像, 锐化图像A与原图经过高斯高通滤波器后得到的图像B差异不明显.
-	然而矩阵A-矩阵B的结果不是零矩阵, 说明两张图像存在差异.
-	通过公式推导: 
+	随着高斯低通滤波器的方差增大, 低通滤波器允许通过更多的频率, 意味着对应的高通滤波器通过的频率范围在缩小.
+	
+	经过高通滤波器后, 得到的图像的细节越来越少.  
+
 ## 04-05 Correlation in the Frequency Domain 
 ### 问题内容
 	Download Figs. 4.41(a) and (b) and duplicate Example 4.11 to obtain Fig. 4.41(e). Give the (x,y) coordinates of the location of the maximum value in the 2D correlation function. There is no need to plot the profile in Fig. 4.41(f).
