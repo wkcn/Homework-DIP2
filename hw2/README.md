@@ -4,9 +4,7 @@
 ### 问题内容
 	(a) Multiply the input image by (-1)^(x+y) to center the transform for filtering.
 
-	(b) Multiply the resulting (complex) array by a real function (in the sense that the
-
-	the real coefficients multiply both the real and imaginary parts of the transforms).
+	(b) Multiply the resulting (complex) array by a real function (in the sense that the real coefficients multiply both the real and imaginary parts of the transforms).
 
 	Recall that multiplication of two images is done on pairs of corresponding elements.
 
@@ -55,23 +53,44 @@ The average value is 207.36348 (no center, dft2)
 ```
 ## 04-03 Lowpass Filtering
 ### 问题内容
-	(a) Implement the Gaussian lowpass filter in Eq. (4.3-7). You must be able to
-specify the size, M x N, of the resulting 2D function. In addition, you must be able
-to specify where the 2D location of the center of the Gaussian function.
-	(b) Download Fig. 4.11(a) [this image is the same as Fig. 4.18(a)] and lowpass
-filter it to obtain Fig. 4.18(c).
+	(a) Implement the Gaussian lowpass filter in Eq. (4.3-7). You must be able to specify the size, M x N, of the resulting 2D function. In addition, you must be able to specify where the 2D location of the center of the Gaussian function.
+	(b) Download Fig. 4.11(a) [this image is the same as Fig. 4.18(a)] and lowpass filter it to obtain Fig. 4.18(c).
 ### 技术讨论
 - 高斯低通滤波器
 ### 结果分析
 ## 04-04 Highpass Filtering Using a Lowpass Image
+### 问题内容
+	(a) Subtract your image in Project 04-03(b) from the original to obtain a sharpened image, as in Eq. (4.4-14). You will note that the resulting image does not resemble the Gaussian highpass results in Fig. 4.26. Explain why this is so.
+
+	(b) Adjust the variance of your Gaussian lowpass filter until the result obtained by image subtraction looks similar to Fig. 4.26(c). Explain your result.
 ### 技术讨论
+	- 锐化图像
+	原图与其进行低通滤波得到的图像进行相减, 得到锐化图像.
+	- 高斯高通滤波器
+	高通滤波器在频域内的函数等于1减去其对应的低通滤波器在频域内的函数
 ### 结果分析
+	观看结果图像, 锐化图像A与原图经过高斯高通滤波器后得到的图像B差异不明显.
+	然而矩阵A-矩阵B的结果不是零矩阵, 说明两张图像存在差异.
+	通过公式推导: 
 ## 04-05 Correlation in the Frequency Domain 
 ### 问题内容
+	Download Figs. 4.41(a) and (b) and duplicate Example 4.11 to obtain Fig. 4.41(e). Give the (x,y) coordinates of the location of the maximum value in the 2D correlation function. There is no need to plot the profile in Fig. 4.41(f).
 ### 技术讨论
+	- 图像间相关性公式
+	- 零延拓
 ### 结果分析
+* 若令f为原图(存在要查找图像的图), g为掩模(需要查找的图像), 两张图片进行零延拓后大小为MxN, 需要查找的图像在原图的左上角位置为(a,b).
+
+  两图计算出的相关性系数的最大值的位置为(M - a, N - b) 
+
+* 若令g为原图(存在要查找图像的图), f为掩模(需要查找的图像), 两张图片进行零延拓后大小为MxN, 需要查找的图像在原图的左上角位置为(a,b).
+
+  两图计算出的相关性系数的最大值的位置为(a, b) 
 
 ## 检验谱平面随着图像旋转而旋转的性质
 ### 问题内容
+	观察图像旋转时谱平面和旋转图像的关系
 ### 技术讨论
+- 公式推导
 ### 结果分析
+- 可以看见图像旋转时, 谱平面也旋转, 而且谱平面旋转的角度与方向与空间域中的图像的旋转的角度与方向一致.
